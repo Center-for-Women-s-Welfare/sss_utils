@@ -1,0 +1,12 @@
+Package: sssUtils
+Title: Utilities for Shared Scripts
+Version: 0.0.0.9001
+Authors@R: 
+    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
+Description: Provides functions for common tasks, including determining
+    base paths based on the operating system.
+License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
+    license
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
