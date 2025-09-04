@@ -1,6 +1,6 @@
 Package: sssUtils
 Title: Utilities for Shared Scripts
-Version: 0.0.0.9001
+Version: 0.0.0.9002
 Authors@R: 
     person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
 Description: Provides functions for common tasks, including determining
