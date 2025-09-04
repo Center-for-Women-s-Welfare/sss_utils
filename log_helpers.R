@@ -6,11 +6,11 @@ log_metadata <- function(module,
                          notes = "",
                          log_dir = "logs") {
   type <- match.arg(type)
-  
+
   # Ensure log directory exists
   module_log_dir <- file.path(log_dir, module)
   if (!dir.exists(module_log_dir)) dir.create(module_log_dir, recursive = TRUE)
-  
+
   # Construct log entry
   log_entry <- data.frame(
     timestamp = Sys.time(),
@@ -23,10 +23,10 @@ log_metadata <- function(module,
     notes = notes,
     stringsAsFactors = FALSE
   )
-  
+
   # Construct log file path for this module
   log_file <- file.path(module_log_dir, paste0("log_", module, ".csv"))
-  
+
   # Write or append log entry
   if (!file.exists(log_file)) {
     write.csv(log_entry, log_file, row.names = FALSE)
@@ -34,6 +34,6 @@ log_metadata <- function(module,
     write.table(log_entry, log_file, sep = ",", row.names = FALSE,
                 col.names = FALSE, append = TRUE)
   }
-  
+
   invisible(log_entry)
 }

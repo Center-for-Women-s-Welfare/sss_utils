@@ -27,18 +27,18 @@ get_inflation_factor <- function(data_point_name, inflation_df, meta_df,
       period = str_to_title(period),
       year = as.numeric(year)
     )
-  
+
   # --- 2. Lookup Metadata ---
   meta_row <- meta_df %>%
     filter(dataset_name == data_point_name)
-  
+
   if (nrow(meta_row) != 1) {
     stop("Expected exactly one metadata row for dataset_name = ", data_point_name,
          ", got: ", nrow(meta_row))
   }
-  
+
   series_id_val <- meta_row$series_id[1]
-  
+
   # --- 3. Get Base CPI Year/Month ---
   if (data_point_name != "child care") {
     base_year <- meta_row$effective_date[1]
@@ -47,33 +47,33 @@ get_inflation_factor <- function(data_point_name, inflation_df, meta_df,
     if (is.null(child_care_inflation_df) || is.null(state_name)) {
       stop("Child care inflation requires state and child_care_inflation_df.")
     }
-    
+
     state_name_lower <- tolower(state_name)
     child_care_row <- child_care_inflation_df %>%
       mutate(state_name_clean = tolower(state_name)) %>%
       filter(state_name_clean == state_name_lower)
-    
+
     if (nrow(child_care_row) != 1) {
       stop("Expected exactly one row for state in child_care_inflation_df, got: ", nrow(child_care_row))
     }
-    
+
     base_year <- child_care_row$base_cpi_year[1]
     base_period <- child_care_row$base_cpi_month[1]
     if (!is.null(base_period) && !is.na(base_period)) {
       base_period <- format(as.Date(paste("1", base_period, "2000"), format = "%d %B %Y"), "%b")
     }
   }
-  
+
   # --- 4. Get Base CPI ---
   base_cpi <- inflation_long %>%
     filter(series_id == series_id_val, year == base_year, period == base_period) %>%
     pull(value) %>%
     as.numeric()
-  
+
   # --- 5. Get Most Recent CPI ---
   month_order <- c("January", "February", "March", "April", "May", "June", "July",
                    "August", "Sept", "October", "November", "December")
-  
+
   most_recent_row <- inflation_long %>%
     filter(series_id == series_id_val, period %in% c(month_order, "Annual")) %>%
     mutate(
@@ -82,9 +82,9 @@ get_inflation_factor <- function(data_point_name, inflation_df, meta_df,
     ) %>%
     arrange(desc(year_period)) %>%
     slice(1)
-  
+
   most_recent_cpi <- as.numeric(most_recent_row$value)
-  
+
   # --- 6. Return Inflation Factor ---
   return(most_recent_cpi / base_cpi)
 }
@@ -108,7 +108,7 @@ get_all_inflation_factors <- function(state_name,
                                       meta_df,
                                       child_care_inflation_df) {
   factors <- list()
-  
+
   # Non-child-care categories
   categories <- c("transportation_fixed", "transportation_insurance", "health_oop", "health_premium")
   for (cat in categories) {
@@ -118,7 +118,7 @@ get_all_inflation_factors <- function(state_name,
       meta_df = meta_df
     )
   }
-  
+
   # Child care: special logic with tryCatch fallback
   factors[["child care"]] <- tryCatch(
     get_inflation_factor(
@@ -133,6 +133,6 @@ get_all_inflation_factors <- function(state_name,
       return(1.0)
     }
   )
-  
+
   return(factors)
 }
