@@ -2,13 +2,16 @@
 % Please edit documentation in R/paths.R
 \name{sss_check_environment}
 \alias{sss_check_environment}
-\title{Quick environment check for students}
+\title{Quick environment check for the \emph{data} base}
 \usage{
-sss_check_environment()
+sss_check_environment(expect_data_dir = "data")
+}
+\arguments{
+\item{expect_data_dir}{Folder expected under the data base (default: \code{"data"}).}
 }
 \value{
-(invisibly) TRUE if OK; otherwise errors with guidance.
+(Invisibly) \code{TRUE} if OK; otherwise errors with guidance.
 }
 \description{
-Quick environment check for students
+Ensures the expected \verb{data/} folder exists under \code{SSS_DATA_BASE}.
 }

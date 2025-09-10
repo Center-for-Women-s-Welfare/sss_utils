@@ -4,7 +4,7 @@
 \alias{get_base_path}
 \title{Get Base Path}
 \usage{
-get_base_path()
+get_base_path(..., base = NULL, must_exist = FALSE)
 }
 \value{
 A string representing the base path for the current operating system.
