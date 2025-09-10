@@ -2,7 +2,7 @@
 % Please edit documentation in R/build_paths.R
 \name{build_sss_path}
 \alias{build_sss_path}
-\title{Build Path in sss_production Project}
+\title{Build path in the sss_production project}
 \usage{
 build_sss_path(
   top_level,
@@ -15,23 +15,24 @@ build_sss_path(
 )
 }
 \arguments{
-\item{top_level}{Either "src" or "data"}
+\item{top_level}{Either \code{"src"} or \code{"data"}.}
 
-\item{year}{The SSS year (e.g., "2026")}
+\item{year}{Character or integer SSS year (e.g., \code{"2026"}).}
 
-\item{subfolder}{A subfolder like "processing", "analysis", "loaders", "raw", or "final"}
+\item{subfolder}{Subfolder under the year (e.g., \code{"processing"}, \code{"raw"}, \code{"processed"},
+\code{"final"}, \code{"reference"}, \code{"analysis"}, \code{"loaders"}).}
 
-\item{module}{Optional. Module name (e.g., "child_care", "housing")}
+\item{module}{Optional module name (e.g., \code{"child_care"}, \code{"taxes_state"}).}
 
-\item{state}{Optional. Two-letter lowercase state abbreviation (e.g., "mi")}
+\item{state}{Optional 2-letter lowercase state (e.g., \code{"mi"}), or other subfolder.}
 
-\item{filename}{Optional. File name. If NULL, returns the directory path.}
+\item{filename}{Optional file name. If \code{NULL}, returns the directory path.}
 
-\item{check_exists}{Logical. If TRUE, throws an error if the resulting path does not exist.}
+\item{check_exists}{If \code{TRUE}, error if the resulting path does not exist.}
 }
 \value{
-A full file or folder path as a character string.
+Absolute, normalized path (character).
 }
 \description{
-Constructs standardized paths for src/ or data/ directories in the SSS project.
+Build path in the sss_production project
 }

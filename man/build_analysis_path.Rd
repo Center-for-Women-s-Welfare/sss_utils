@@ -2,11 +2,10 @@
 % Please edit documentation in R/build_paths.R
 \name{build_analysis_path}
 \alias{build_analysis_path}
-\title{Build path to analysis file or directory}
+\title{Path to analysis file/dir: src/\if{html}{\out{<year>}}/analysis/\if{html}{\out{<file>}}}
 \usage{
 build_analysis_path(year = NULL, filename = NULL, check_exists = FALSE)
 }
 \description{
-Returns path to src/year/analysis/\link{filename}.
-If filename is NULL, returns the directory path.
+Path to analysis file/dir: src/\if{html}{\out{<year>}}/analysis/\if{html}{\out{<file>}}
 }

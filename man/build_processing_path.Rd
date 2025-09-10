@@ -2,7 +2,7 @@
 % Please edit documentation in R/build_paths.R
 \name{build_processing_path}
 \alias{build_processing_path}
-\title{Build path to a processing file or directory}
+\title{Path to a processing file/dir: src/\if{html}{\out{<year>}}/processing/\if{html}{\out{<module>}}/\if{html}{\out{<state>}}/\if{html}{\out{<file>}}}
 \usage{
 build_processing_path(
   year = NULL,
@@ -13,6 +13,5 @@ build_processing_path(
 )
 }
 \description{
-Returns path to src/year/processing/module/\link{state}/\link{filename}.
-If filename is NULL, returns the directory path.
+Path to a processing file/dir: src/\if{html}{\out{<year>}}/processing/\if{html}{\out{<module>}}/\if{html}{\out{<state>}}/\if{html}{\out{<file>}}
 }

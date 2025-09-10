@@ -2,11 +2,10 @@
 % Please edit documentation in R/build_paths.R
 \name{build_loaders_path}
 \alias{build_loaders_path}
-\title{Build path to loaders file or directory}
+\title{Path to loaders file/dir: src/\if{html}{\out{<year>}}/loaders/\if{html}{\out{<file>}}}
 \usage{
 build_loaders_path(year = NULL, filename = NULL, check_exists = FALSE)
 }
 \description{
-Returns path to src/year/loaders/\link{filename}.
-If filename is NULL, returns the directory path.
+Path to loaders file/dir: src/\if{html}{\out{<year>}}/loaders/\if{html}{\out{<file>}}
 }
