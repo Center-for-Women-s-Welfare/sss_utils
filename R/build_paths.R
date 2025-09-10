@@ -45,17 +45,17 @@ build_sss_path <- function(top_level,
     stop("top_level must be 'src' or 'data'", call. = FALSE)
   }
   resolver <- if (tl == "src") sss_code_path else sss_data_path
-  
+
   parts <- c(
     tl, as.character(year), subfolder,
     if (!is.null(module)) module,
     if (!is.null(state))  state,
     if (!is.null(filename)) filename
   )
-  
+
   # build using the correct base helper
   full_path <- do.call(resolver, c(as.list(parts), list(must_exist = check_exists)))
-  
+
   if (interactive()) message("Built path: ", full_path)
   full_path
 }
@@ -72,7 +72,7 @@ build_processing_path <- function(year = NULL,
   if (missing(year))   year   <- get0("sss_year", envir = parent.frame(), ifnotfound = NULL)
   if (missing(module)) module <- get0("module",   envir = parent.frame(), ifnotfound = NULL)
   if (missing(state))  state  <- get0("state",    envir = parent.frame(), ifnotfound = NULL)
-  
+
   build_sss_path("src", year, "processing", module, state, filename, check_exists)
 }
 
@@ -104,7 +104,7 @@ build_raw_data_path <- function(year = NULL,
   if (missing(year))   year   <- get0("sss_year", envir = parent.frame(), ifnotfound = NULL)
   if (missing(module)) module <- get0("module",   envir = parent.frame(), ifnotfound = NULL)
   if (missing(state))  state  <- get0("state",    envir = parent.frame(), ifnotfound = NULL)
-  
+
   build_sss_path("data", year, "raw", module, state, filename, check_exists)
 }
 
@@ -118,7 +118,7 @@ build_processed_data_path <- function(year = NULL,
   if (missing(year))   year   <- get0("sss_year", envir = parent.frame(), ifnotfound = NULL)
   if (missing(module)) module <- get0("module",   envir = parent.frame(), ifnotfound = NULL)
   if (missing(state))  state  <- get0("state",    envir = parent.frame(), ifnotfound = NULL)
-  
+
   build_sss_path("data", year, "processed", module, state, filename, check_exists)
 }
 
@@ -130,7 +130,7 @@ build_final_data_path <- function(year = NULL,
                                   check_exists = FALSE) {
   if (missing(year))  year  <- get0("sss_year", envir = parent.frame(), ifnotfound = NULL)
   if (missing(state)) state <- get0("state",    envir = parent.frame(), ifnotfound = NULL)
-  
+
   build_sss_path("data", year, "final", module = NULL, state, filename, check_exists)
 }
 
@@ -144,7 +144,7 @@ build_reference_data_path <- function(year = NULL,
   if (missing(year))   year   <- get0("sss_year", envir = parent.frame(), ifnotfound = NULL)
   if (missing(module)) module <- get0("module",   envir = parent.frame(), ifnotfound = NULL)
   if (missing(state))  state  <- get0("state",    envir = parent.frame(), ifnotfound = NULL)
-  
+
   build_sss_path("data", year, "reference", module, state, filename, check_exists)
 }
 
@@ -163,7 +163,7 @@ get_all_sss_dirs <- function(child_care_inputs_state = "inputs") {
     transportation_dir    = build_processed_data_path(module = "transportation", state = NULL, check_exists = TRUE),
     child_care_dir        = build_processed_data_path(module = "child_care",      state = NULL, check_exists = TRUE)
   )
-  
+
   missing <- names(dirs)[!dir.exists(unlist(dirs))]
   if (length(missing)) stop("Missing directories: ", paste(missing, collapse = ", "), call. = FALSE)
   dirs
