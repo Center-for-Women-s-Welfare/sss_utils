@@ -2,19 +2,23 @@
 % Please edit documentation in R/config_helpers.R
 \name{load_sss_config}
 \alias{load_sss_config}
-\title{Load SSS Configuration from YAML}
+\title{Load SSS configuration (global + state)}
 \usage{
-load_sss_config(state_abbr, base_path = NULL)
+load_sss_config(state_abbr, base_path = NULL, repo = NULL)
 }
 \arguments{
-\item{state_abbr}{Two-letter state abbreviation, e.g., "AL"}
+\item{state_abbr}{Two-letter state code, e.g., "IA".}
 
-\item{base_path}{Base path for the SSS project (optional, uses \code{get_base_path()} if NULL)}
+\item{base_path}{Optional explicit repo root override. If provided, it wins.}
+
+\item{repo}{Optional repo name (e.g., "sss_production") if you want to load
+configs from a different local repo than the current one. Ignored when
+\code{base_path} is supplied.}
 }
 \value{
-A named list containing merged config values
+Named list of merged config values (state overrides global).
 }
 \description{
-Loads a merged configuration from both the global and state YAML files.
-Promotes nested config fields like \code{weights} and \code{paths} to top-level for convenience.
+Reads config files from the \emph{code repo} (not Google Drive).
+By default it auto-detects the current repo root via \code{sss_code_path()}.
 }

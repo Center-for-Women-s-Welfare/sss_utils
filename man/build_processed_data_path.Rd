@@ -2,7 +2,7 @@
 % Please edit documentation in R/build_paths.R
 \name{build_processed_data_path}
 \alias{build_processed_data_path}
-\title{Build path to processed data file or directory}
+\title{Path to PROCESSED data: data/\if{html}{\out{<year>}}/processed/\if{html}{\out{<module>}}/\if{html}{\out{<state>}}/\if{html}{\out{<file>}}}
 \usage{
 build_processed_data_path(
   year = NULL,
@@ -13,6 +13,5 @@ build_processed_data_path(
 )
 }
 \description{
-Returns path to data/year/processed/module/\link{state}/\link{filename}.
-If filename is NULL, returns the directory path.
+Path to PROCESSED data: data/\if{html}{\out{<year>}}/processed/\if{html}{\out{<module>}}/\if{html}{\out{<state>}}/\if{html}{\out{<file>}}
 }

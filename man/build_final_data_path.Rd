@@ -2,7 +2,7 @@
 % Please edit documentation in R/build_paths.R
 \name{build_final_data_path}
 \alias{build_final_data_path}
-\title{Build path to final output data file or directory}
+\title{Path to FINAL outputs: data/\if{html}{\out{<year>}}/final/\if{html}{\out{<state>}}/\if{html}{\out{<file>}}}
 \usage{
 build_final_data_path(
   year = NULL,
@@ -12,6 +12,5 @@ build_final_data_path(
 )
 }
 \description{
-Returns path to data/year/final/\link{state}/\link{filename}.
-If filename is NULL, returns the directory path.
+Path to FINAL outputs: data/\if{html}{\out{<year>}}/final/\if{html}{\out{<state>}}/\if{html}{\out{<file>}}
 }

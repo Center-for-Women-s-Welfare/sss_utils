@@ -2,7 +2,7 @@
 % Please edit documentation in R/build_paths.R
 \name{build_reference_data_path}
 \alias{build_reference_data_path}
-\title{Build path to reference data file or directory}
+\title{Path to REFERENCE data: data/\if{html}{\out{<year>}}/reference/\if{html}{\out{<module>}}/\if{html}{\out{<state>}}/\if{html}{\out{<file>}}}
 \usage{
 build_reference_data_path(
   year = NULL,
@@ -13,6 +13,5 @@ build_reference_data_path(
 )
 }
 \description{
-Returns path to data/year/reference/module/\link{state}/\link{filename}.
-If filename is NULL, returns the directory path.
+Path to REFERENCE data: data/\if{html}{\out{<year>}}/reference/\if{html}{\out{<module>}}/\if{html}{\out{<state>}}/\if{html}{\out{<file>}}
 }

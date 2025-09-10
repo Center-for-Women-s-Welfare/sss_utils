@@ -2,7 +2,7 @@
 % Please edit documentation in R/build_paths.R
 \name{build_raw_data_path}
 \alias{build_raw_data_path}
-\title{Build path to raw data file or directory}
+\title{Path to RAW data: data/\if{html}{\out{<year>}}/raw/\if{html}{\out{<module>}}/\if{html}{\out{<state>}}/\if{html}{\out{<file>}}}
 \usage{
 build_raw_data_path(
   year = NULL,
@@ -13,6 +13,5 @@ build_raw_data_path(
 )
 }
 \description{
-Returns path to data/year/raw/module/\link{state}/\link{filename}.
-If filename is NULL, returns the directory path.
+Path to RAW data: data/\if{html}{\out{<year>}}/raw/\if{html}{\out{<module>}}/\if{html}{\out{<state>}}/\if{html}{\out{<file>}}
 }
