@@ -15,7 +15,7 @@
 #'
 #' @name sss_build_paths
 #' @noRd
-#' 
+#'
 #' #' @details
 #' This file now relies on the environment-based path system defined in `paths.R`
 #' (`sss_data_path()`, `sss_code_path()`), replacing older `get_base_path()` logic.
@@ -51,35 +51,35 @@ build_sss_path <- function(top_level,
                            check_exists = FALSE,
                            where = c("data", "code"),
                            repo = "sss_production") {
-  
+
   where <- match.arg(where)
-  
+
   if (where == "data") {
      base_path <- sss_data_base(must_exist = TRUE)
   } else {
     base_path <- sss_code_path(repo = repo, must_exist = TRUE)
   }
-  
+
   path_parts <- c(
     base_path,
     top_level,
     as.character(year),
     subfolder
   )
-  
+
   if (!is.null(module))   path_parts <- c(path_parts, module)
   if (!is.null(state))    path_parts <- c(path_parts, state)
   if (!is.null(filename)) path_parts <- c(path_parts, filename)
-  
+
   full_path <- do.call(file.path, as.list(path_parts))
-  
+
   if (interactive()) message("Built path (", where, "): ", full_path)
-  
+
   if (check_exists) {
     exists <- if (is.null(filename)) dir.exists(full_path) else file.exists(full_path)
     if (!exists) stop("Path does not exist: ", full_path)
   }
-  
+
   full_path
 }
 
