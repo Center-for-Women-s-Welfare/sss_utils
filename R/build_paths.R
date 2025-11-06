@@ -89,7 +89,7 @@ build_sss_path <- function(top_level,
 
 #' Path to a processing file/dir: src/<year>/processing/<module>/<state>/<file>
 #' @export
-build_processing_path <- function(year = NULL,
+build_code_processing_path <- function(year = NULL,
                                   module = NULL,
                                   state = NULL,
                                   filename = NULL,
@@ -103,7 +103,7 @@ build_processing_path <- function(year = NULL,
 
 #' Path to analysis file/dir: src/<year>/analysis/<file>
 #' @export
-build_analysis_path <- function(year = NULL,
+build_code_analysis_path <- function(year = NULL,
                                 filename = NULL,
                                 check_exists = FALSE) {
   if (missing(year)) year <- get0("sss_year", envir = parent.frame(), ifnotfound = NULL)
@@ -121,7 +121,7 @@ build_loaders_path <- function(year = NULL,
 
 #' Path to RAW data: data/<year>/raw/<module>/<state>/<file>
 #' @export
-build_raw_data_path <- function(year = NULL,
+build_data_raw_path <- function(year = NULL,
                                 module = NULL,
                                 state = NULL,
                                 filename = NULL,
@@ -135,7 +135,7 @@ build_raw_data_path <- function(year = NULL,
 
 #' Path to PROCESSED data: data/<year>/processed/<module>/<state>/<file>
 #' @export
-build_processed_data_path <- function(year = NULL,
+build_data_processed_path <- function(year = NULL,
                                       module = NULL,
                                       state = NULL,
                                       filename = NULL,
@@ -149,7 +149,7 @@ build_processed_data_path <- function(year = NULL,
 
 #' Path to FINAL outputs: data/<year>/final/<state>/<file>
 #' @export
-build_final_data_path <- function(year = NULL,
+build_data_final_path <- function(year = NULL,
                                   state = NULL,
                                   filename = NULL,
                                   check_exists = FALSE) {
@@ -161,7 +161,7 @@ build_final_data_path <- function(year = NULL,
 
 #' Path to REFERENCE data: data/<year>/reference/<module>/<state>/<file>
 #' @export
-build_reference_data_path <- function(year = NULL,
+build_data_reference_path <- function(year = NULL,
                                       module = NULL,
                                       state = NULL,
                                       filename = NULL,
