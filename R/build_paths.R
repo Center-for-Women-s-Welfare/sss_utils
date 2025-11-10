@@ -15,22 +15,32 @@
 #'
 #' @name sss_build_paths
 #' @noRd
+#'
+#' #' @details
+#' This file now relies on the environment-based path system defined in `paths.R`
+#' (`sss_data_path()`, `sss_code_path()`), replacing older `get_base_path()` logic.
+
 NULL
 
 # ---- core builder -----------------------------------------------------------
 
-#' Build path in the sss_production project
+#' Build a standardized path within the SSS project
 #'
-#' @param top_level Either `"src"` or `"data"`.
-#' @param year Character or integer SSS year (e.g., `"2026"`).
-#' @param subfolder Subfolder under the year (e.g., `"processing"`, `"raw"`, `"processed"`,
-#'   `"final"`, `"reference"`, `"analysis"`, `"loaders"`).
-#' @param module Optional module name (e.g., `"child_care"`, `"taxes_state"`).
-#' @param state  Optional 2-letter lowercase state (e.g., `"mi"`), or other subfolder.
-#' @param filename Optional file name. If `NULL`, returns the directory path.
-#' @param check_exists If `TRUE`, error if the resulting path does not exist.
+#' This can point either to the shared *data* tree
+#'   <SSS_DATA_BASE>/sss_production/...
+#' or to the local *code* repo tree
+#'   <SSS_CODE_BASE>/<repo>/...
 #'
-#' @return Absolute, normalized path (character).
+#' @param top_level "src" or "data"
+#' @param year SSS year, e.g. 2026
+#' @param subfolder e.g. "processing", "raw", "processed", "analysis", "loaders"
+#' @param module optional module name
+#' @param state optional state name
+#' @param filename optional filename
+#' @param check_exists if TRUE, error when path/file not found
+#' @param where either "data" (Drive) or "code" (local repo)
+#' @param repo which repo under SSS_CODE_BASE when where = "code"
+#'
 #' @export
 build_sss_path <- function(top_level,
                            year,
@@ -38,33 +48,48 @@ build_sss_path <- function(top_level,
                            module = NULL,
                            state = NULL,
                            filename = NULL,
-                           check_exists = FALSE) {
-  # which base to use?
-  tl <- tolower(top_level)
-  if (!tl %in% c("src", "data")) {
-    stop("top_level must be 'src' or 'data'", call. = FALSE)
-  }
-  resolver <- if (tl == "src") sss_code_path else sss_data_path
+                           check_exists = FALSE,
+                           where = c("data", "code"),
+                           repo = "sss_production") {
 
-  parts <- c(
-    tl, as.character(year), subfolder,
-    if (!is.null(module)) module,
-    if (!is.null(state))  state,
-    if (!is.null(filename)) filename
+  where <- match.arg(where)
+
+  if (where == "data") {
+     base_path <- sss_data_base(must_exist = TRUE)
+  } else {
+    base_path <- sss_code_path(repo = repo, must_exist = TRUE)
+  }
+
+  path_parts <- c(
+    base_path,
+    top_level,
+    as.character(year),
+    subfolder
   )
 
-  # build using the correct base helper
-  full_path <- do.call(resolver, c(as.list(parts), list(must_exist = check_exists)))
+  if (!is.null(module))   path_parts <- c(path_parts, module)
+  if (!is.null(state))    path_parts <- c(path_parts, state)
+  if (!is.null(filename)) path_parts <- c(path_parts, filename)
 
-  if (interactive()) message("Built path: ", full_path)
+  full_path <- do.call(file.path, as.list(path_parts))
+
+  if (interactive()) message("Built path (", where, "): ", full_path)
+
+  if (check_exists) {
+    exists <- if (is.null(filename)) dir.exists(full_path) else file.exists(full_path)
+    if (!exists) stop("Path does not exist: ", full_path)
+  }
+
   full_path
 }
+
+
 
 # ---- convenience wrappers ---------------------------------------------------
 
 #' Path to a processing file/dir: src/<year>/processing/<module>/<state>/<file>
 #' @export
-build_processing_path <- function(year = NULL,
+build_code_processing_path <- function(year = NULL,
                                   module = NULL,
                                   state = NULL,
                                   filename = NULL,
@@ -73,16 +98,16 @@ build_processing_path <- function(year = NULL,
   if (missing(module)) module <- get0("module",   envir = parent.frame(), ifnotfound = NULL)
   if (missing(state))  state  <- get0("state",    envir = parent.frame(), ifnotfound = NULL)
 
-  build_sss_path("src", year, "processing", module, state, filename, check_exists)
+  build_sss_path("src", year, "processing", module, state, filename, check_exists,where= "code")
 }
 
 #' Path to analysis file/dir: src/<year>/analysis/<file>
 #' @export
-build_analysis_path <- function(year = NULL,
+build_code_analysis_path <- function(year = NULL,
                                 filename = NULL,
                                 check_exists = FALSE) {
   if (missing(year)) year <- get0("sss_year", envir = parent.frame(), ifnotfound = NULL)
-  build_sss_path("src", year, "analysis", module = NULL, state = NULL, filename, check_exists)
+  build_sss_path("src", year, "analysis", module = NULL, state = NULL, filename, check_exists, where= "code")
 }
 
 #' Path to loaders file/dir: src/<year>/loaders/<file>
@@ -91,12 +116,12 @@ build_loaders_path <- function(year = NULL,
                                filename = NULL,
                                check_exists = FALSE) {
   if (missing(year)) year <- get0("sss_year", envir = parent.frame(), ifnotfound = NULL)
-  build_sss_path("src", year, "loaders", module = NULL, state = NULL, filename, check_exists)
+  build_sss_path("src", year, "loaders", module = NULL, state = NULL, filename, check_exists, where= "code")
 }
 
 #' Path to RAW data: data/<year>/raw/<module>/<state>/<file>
 #' @export
-build_raw_data_path <- function(year = NULL,
+build_data_raw_path <- function(year = NULL,
                                 module = NULL,
                                 state = NULL,
                                 filename = NULL,
@@ -110,7 +135,7 @@ build_raw_data_path <- function(year = NULL,
 
 #' Path to PROCESSED data: data/<year>/processed/<module>/<state>/<file>
 #' @export
-build_processed_data_path <- function(year = NULL,
+build_data_processed_path <- function(year = NULL,
                                       module = NULL,
                                       state = NULL,
                                       filename = NULL,
@@ -124,7 +149,7 @@ build_processed_data_path <- function(year = NULL,
 
 #' Path to FINAL outputs: data/<year>/final/<state>/<file>
 #' @export
-build_final_data_path <- function(year = NULL,
+build_data_final_path <- function(year = NULL,
                                   state = NULL,
                                   filename = NULL,
                                   check_exists = FALSE) {
@@ -136,7 +161,7 @@ build_final_data_path <- function(year = NULL,
 
 #' Path to REFERENCE data: data/<year>/reference/<module>/<state>/<file>
 #' @export
-build_reference_data_path <- function(year = NULL,
+build_data_reference_path <- function(year = NULL,
                                       module = NULL,
                                       state = NULL,
                                       filename = NULL,

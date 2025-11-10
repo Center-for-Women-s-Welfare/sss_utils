@@ -1,12 +1,13 @@
 Package: sssUtils
-Title: Utilities for Shared Scripts
-Version: 0.0.0.9002
+Title: Utilities for Self-Sufficiency Standard (SSS) Projects
+Version: 0.0.0.9003
 Authors@R:
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: Provides functions for common tasks, including determining
-    base paths based on the operating system.
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+    person("Lisa", "Manzer", email = "lmanzer@uw.edu", role = c("aut", "cre"))
+Description: Provides utility functions for common data and code workflows in
+    the Self-Sufficiency Standard (SSS) project. Includes environment-based path
+    resolution using SSS_DATA_BASE and SSS_CODE_BASE, configuration helpers, and
+    other shared functions for the sss_production pipeline.
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
