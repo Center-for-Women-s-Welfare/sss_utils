@@ -51,12 +51,12 @@ load_sss_config <- function(state_abbr = NULL,
                             year = NULL,
                             base_path = NULL,
                             repo = NULL) {
-  
+
   # must have exactly one of state_abbr/module
   if (is.null(state_abbr) && is.null(module)) {
     stop("You must supply either `state_abbr` or `module`.")
   }
-  
+
   # 1. resolve root
   if (!is.null(base_path)) {
     root <- normalizePath(base_path, winslash = "/", mustWork = TRUE)
@@ -67,7 +67,7 @@ load_sss_config <- function(state_abbr = NULL,
       sss_code_path(repo = repo, must_exist = TRUE)
     }
   }
-  
+
   # 2. determine year if not given
   if (is.null(year)) {
     config_dir <- file.path(root, "config")
@@ -79,10 +79,10 @@ load_sss_config <- function(state_abbr = NULL,
     # use the latest year present
     year <- max(year_dirs)
   }
-  
+
   # 3. build paths
   global_config_path <- file.path(root, "config", year, "config_global.yml")
-  
+
   if (!is.null(state_abbr)) {
     specific_config_path <- file.path(
       root, "config", year, "states",
@@ -94,14 +94,14 @@ load_sss_config <- function(state_abbr = NULL,
       paste0("config_", module, ".yml")
     )
   }
-  
+
   # 4. fallback to sss_production if global not found
   if (!file.exists(global_config_path) &&
       is.null(base_path) && is.null(repo)) {
-    
+
     fallback_root <- sss_code_path(repo = "sss_production", must_exist = TRUE)
     global_config_path <- file.path(fallback_root, "config", year, "config_global.yml")
-    
+
     if (!is.null(state_abbr)) {
       specific_config_path <- file.path(
         fallback_root, "config", year, "states",
@@ -113,10 +113,10 @@ load_sss_config <- function(state_abbr = NULL,
         paste0("config_", module, ".yml")
       )
     }
-    
+
     root <- fallback_root
   }
-  
+
   # 5. existence checks
   if (!file.exists(global_config_path)) {
     stop("Global config not found: ", global_config_path)
@@ -124,16 +124,16 @@ load_sss_config <- function(state_abbr = NULL,
   if (!file.exists(specific_config_path)) {
     stop("Config not found: ", specific_config_path)
   }
-  
+
   # 6. read + merge, specific wins
   global_config   <- yaml::read_yaml(global_config_path)
   specific_config <- yaml::read_yaml(specific_config_path)
-  
+
   config <- utils::modifyList(global_config, specific_config)
-  
+
   # 7. flatten convenience sublists
   if (!is.null(config$weights)) config <- c(config, config$weights)
   if (!is.null(config$paths))   config <- c(config, config$paths)
-  
+
   config
 }
