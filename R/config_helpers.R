@@ -28,7 +28,7 @@ load_sss_config <- function(year,
                             module = NULL,
                             base_path = NULL,
                             repo = NULL) {
-  
+
   # input validation
   if (missing(year) || !grepl("^[0-9]{4}$", as.character(year))) {
     stop("You must provide a 4-digit `year`, e.g., load_sss_config(2026, 'IA').")
@@ -36,7 +36,7 @@ load_sss_config <- function(year,
   if (is.null(state_abbr) && is.null(module)) {
     stop("You must supply either `state_abbr` or `module`.")
   }
-  
+
   # resolve root
   if (!is.null(base_path)) {
     root <- normalizePath(base_path, winslash = "/", mustWork = TRUE)
@@ -47,10 +47,10 @@ load_sss_config <- function(year,
       sss_code_path(repo = repo, must_exist = TRUE)
     }
   }
-  
+
   # build paths
   global_config_path <- file.path(root, "config", year, "config_global.yml")
-  
+
   if (!is.null(state_abbr)) {
     specific_config_path <- file.path(
       root, "config", year, "states",
@@ -62,7 +62,7 @@ load_sss_config <- function(year,
       paste0("config_", module, ".yml")
     )
   }
-  
+
   # fallback logic
   if (!file.exists(global_config_path) &&
       is.null(base_path) && is.null(repo)) {
@@ -81,22 +81,22 @@ load_sss_config <- function(year,
     }
     root <- fallback_root
   }
-  
+
   if (!file.exists(global_config_path)) {
     stop("Global config not found: ", global_config_path)
   }
   if (!file.exists(specific_config_path)) {
     stop("Config not found: ", specific_config_path)
   }
-  
+
   # read + merge
   global_config   <- yaml::read_yaml(global_config_path)
   specific_config <- yaml::read_yaml(specific_config_path)
   config <- utils::modifyList(global_config, specific_config)
-  
+
   # flatten
   if (!is.null(config$weights)) config <- c(config, config$weights)
   if (!is.null(config$paths))   config <- c(config, config$paths)
-  
+
   config
 }
