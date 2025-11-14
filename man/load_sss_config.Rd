@@ -2,23 +2,43 @@
 % Please edit documentation in R/config_helpers.R
 \name{load_sss_config}
 \alias{load_sss_config}
-\title{Load SSS configuration (global + state)}
+\title{Load SSS configuration (global + state or module)}
 \usage{
-load_sss_config(state_abbr, base_path = NULL, repo = NULL)
+load_sss_config(
+  year,
+  state_abbr = NULL,
+  module = NULL,
+  base_path = NULL,
+  repo = NULL
+)
 }
 \arguments{
-\item{state_abbr}{Two-letter state code, e.g., "IA".}
+\item{year}{4-digit year directory under \verb{config/} (e.g., \code{2026}).}
 
-\item{base_path}{Optional explicit repo root override. If provided, it wins.}
+\item{state_abbr}{Optional. Two-letter state abbreviation (e.g. \code{"IA"}).}
 
-\item{repo}{Optional repo name (e.g., "sss_production") if you want to load
-configs from a different local repo than the current one. Ignored when
-\code{base_path} is supplied.}
+\item{module}{Optional. Module name (e.g. \code{"housing"}).}
+
+\item{base_path}{Optional. Explicit repo root override.}
+
+\item{repo}{Optional. Repository name (e.g., \code{"sss_production"}) to resolve
+via \code{sss_code_path()}. Ignored if \code{base_path} is provided.}
 }
 \value{
-Named list of merged config values (state overrides global).
+Named list of configuration values with state/module overrides merged
+over the global config.
 }
 \description{
-Reads config files from the \emph{code repo} (not Google Drive).
-By default it auto-detects the current repo root via \code{sss_code_path()}.
+Loads configuration YAML files from the \verb{config/<year>/} directory structure.
+Supports either \strong{state-specific} configs (\verb{config/<year>/states/config_<STATE>.yml})
+or \strong{module} configs (\verb{config/<year>/module/config_<MODULE>.yml}).
+}
+\examples{
+\dontrun{
+  # load 2026 Iowa config
+  cfg <- load_sss_config(2026, state_abbr = "IA")
+
+  # load 2026 housing module
+  cfg <- load_sss_config(2026, module = "housing")
+}
 }
