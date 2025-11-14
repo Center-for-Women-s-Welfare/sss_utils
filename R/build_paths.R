@@ -15,12 +15,11 @@
 #'
 #' @name sss_build_paths
 #' @noRd
-#'
-#' #' @details
-#' This file now relies on the environment-based path system defined in `paths.R`
-#' (`sss_data_path()`, `sss_code_path()`), replacing older `get_base_path()` logic.
-
 NULL
+
+# This file now relies on the environment-based path system defined in paths.R
+# (`sss_data_path()`, `sss_code_path()`), replacing older `get_base_path()` logic.
+
 
 # ---- core builder -----------------------------------------------------------
 
@@ -177,16 +176,16 @@ build_data_reference_path <- function(year = NULL,
 #' @export
 get_all_sss_dirs <- function(child_care_inputs_state = "inputs") {
   dirs <- list(
-    state_data_dir        = build_processed_data_path(module = "state_data",    state = NULL,  check_exists = TRUE),
-    fed_tax_dir           = build_processed_data_path(module = "taxes_federal", state = NULL,  check_exists = TRUE),
-    state_tax_dir         = build_processed_data_path(module = "taxes_state",   state = NULL,  check_exists = TRUE),
-    ref_dir               = build_reference_data_path(                          state = NULL,  check_exists = TRUE),
-    county_data_dir       = build_processed_data_path(module = "county_data",   state = NULL,  check_exists = TRUE),
-    analysis_dir          = build_analysis_path(                                                check_exists = TRUE),
-    loaders_dir           = build_loaders_path(                                                 check_exists = TRUE),
-    child_care_inputs_dir = build_processed_data_path(module = "child_care", state = child_care_inputs_state, check_exists = TRUE),
-    transportation_dir    = build_processed_data_path(module = "transportation", state = NULL, check_exists = TRUE),
-    child_care_dir        = build_processed_data_path(module = "child_care",      state = NULL, check_exists = TRUE)
+    state_data_dir        = build_data_processed_path(module = "state_data",    state = NULL,  check_exists = TRUE),
+    fed_tax_dir           = build_data_processed_path(module = "taxes_federal", state = NULL,  check_exists = TRUE),
+    state_tax_dir         = build_data_processed_path(module = "taxes_state",   state = NULL,  check_exists = TRUE),
+    ref_dir               = build_data_reference_path(                          state = NULL,  check_exists = TRUE),
+    county_data_dir       = build_data_processed_path(module = "county_data",   state = NULL,  check_exists = TRUE),
+    analysis_dir          = build_code_analysis_path(                                                check_exists = TRUE),
+    loaders_dir           = build_code_loaders_path(                                                 check_exists = TRUE),
+    child_care_inputs_dir = build_data_processed_path(module = "child_care", state = child_care_inputs_state, check_exists = TRUE),
+    transportation_dir    = build_data_processed_path(module = "transportation", state = NULL, check_exists = TRUE),
+    child_care_dir        = build_data_processed_path(module = "child_care",      state = NULL, check_exists = TRUE)
   )
 
   missing <- names(dirs)[!dir.exists(unlist(dirs))]

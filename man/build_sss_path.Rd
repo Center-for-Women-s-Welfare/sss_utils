@@ -2,7 +2,7 @@
 % Please edit documentation in R/build_paths.R
 \name{build_sss_path}
 \alias{build_sss_path}
-\title{Build path in the sss_production project}
+\title{Build a standardized path within the SSS project}
 \usage{
 build_sss_path(
   top_level,
@@ -11,28 +11,33 @@ build_sss_path(
   module = NULL,
   state = NULL,
   filename = NULL,
-  check_exists = FALSE
+  check_exists = FALSE,
+  where = c("data", "code"),
+  repo = "sss_production"
 )
 }
 \arguments{
-\item{top_level}{Either \code{"src"} or \code{"data"}.}
+\item{top_level}{"src" or "data"}
 
-\item{year}{Character or integer SSS year (e.g., \code{"2026"}).}
+\item{year}{SSS year, e.g. 2026}
 
-\item{subfolder}{Subfolder under the year (e.g., \code{"processing"}, \code{"raw"}, \code{"processed"},
-\code{"final"}, \code{"reference"}, \code{"analysis"}, \code{"loaders"}).}
+\item{subfolder}{e.g. "processing", "raw", "processed", "analysis", "loaders"}
 
-\item{module}{Optional module name (e.g., \code{"child_care"}, \code{"taxes_state"}).}
+\item{module}{optional module name}
 
-\item{state}{Optional 2-letter lowercase state (e.g., \code{"mi"}), or other subfolder.}
+\item{state}{optional state name}
 
-\item{filename}{Optional file name. If \code{NULL}, returns the directory path.}
+\item{filename}{optional filename}
 
-\item{check_exists}{If \code{TRUE}, error if the resulting path does not exist.}
-}
-\value{
-Absolute, normalized path (character).
+\item{check_exists}{if TRUE, error when path/file not found}
+
+\item{where}{either "data" (Drive) or "code" (local repo)}
+
+\item{repo}{which repo under SSS_CODE_BASE when where = "code"}
 }
 \description{
-Build path in the sss_production project
+This can point either to the shared \emph{data} tree
+<SSS_DATA_BASE>/sss_production/...
+or to the local \emph{code} repo tree
+<SSS_CODE_BASE>/\if{html}{\out{<repo>}}/...
 }
