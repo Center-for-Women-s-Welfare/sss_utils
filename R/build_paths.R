@@ -111,7 +111,7 @@ build_code_analysis_path <- function(year = NULL,
 
 #' Path to loaders file/dir: src/<year>/loaders/<file>
 #' @export
-build_loaders_path <- function(year = NULL,
+build_code_loaders_path <- function(year = NULL,
                                filename = NULL,
                                check_exists = FALSE) {
   if (missing(year)) year <- get0("sss_year", envir = parent.frame(), ifnotfound = NULL)
