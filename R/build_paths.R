@@ -101,8 +101,8 @@ build_code_processing_path <- function(year = NULL,
 }
 
 #' NEW Path to a processing file/dir: src/<year>/processing/<module>/<file>
-#' Use this when there should be no state in the file path. I.e. childcare 
-#' processing code that is used on every state. 
+#' Use this when there should be no state in the file path. I.e. childcare
+#' processing code that is used on every state.
 #' @export
 build_code_processing_path_strict <- function(year = NULL,
                                               module = NULL,
