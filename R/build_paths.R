@@ -100,6 +100,7 @@ build_code_processing_path <- function(year = NULL,
   build_sss_path("src", year, "processing", module, state, filename, check_exists,where= "code")
 }
 
+#' NEW Path to a processing file/dir: src/<year>/processing/<module>/<file>
 # Use this when there should be no state in the file path. I.e. childcare 
 # processing code that is used on every state. 
 build_code_processing_path_strict <- function(year = NULL,
