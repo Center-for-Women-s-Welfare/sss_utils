@@ -1,27 +1,41 @@
 # sssUtils
 
-Utility functions for common tasks in the Self-Sufficiency Standard (SSS) project workflow.
+Utilities for the Self-Sufficiency Standard (SSS) workflow, including:
 
-This package provides path and configuration helpers used across `sss_production` and related repositories, including environment-based path resolution via `SSS_DATA_BASE` (Google Drive data root) and `SSS_CODE_BASE` (local code root).
+-   Path helpers (`sss_data_path()`, `sss_code_path()`)
+-   Environment checks
+-   Configuration loading for modules and states
+-   Shared helper functions used across the SSS codebase
 
----
+------------------------------------------------------------------------
 
-### ⚙️ Environment setup
+## Installation
 
-To use the path utilities, define these environment variables in your `~/.Renviron` file:
+`sssUtils` is **not** on CRAN. Install it from GitHub:
 
-SSS_DATA_BASE="G:/Shared drives/CWW Team Drive/SSS/sss_production"
-SSS_CODE_BASE="C:/Users/YourName/Desktop/local_dev"
+``` r
+install.packages("remotes")   # if needed
+remotes::install_github("Center-for-Women-s-Welfare/sssUtils")
+```
 
----
+### Windows users
 
-### 🧭 Example usage
+Windows requires **Rtools** to build packages from source:\
+<https://cran.r-project.org/bin/windows/Rtools/>
 
-# Build paths under the shared Drive (data)
-build_sss_path("data", 2026, "processed", module = "taxes_state")
+**Basic usage**
 
-# Build paths under your local repo (code)
-build_sss_path("src", 2026, "processing", where = "code", module = "child_care")
+``` r
+`library(sssUtils)`
 
-# Load configuration files
-load_sss_config("IA")  # Auto-detects current repo or falls back to sss_production
+# `Check environment variables`
+
+`sss_check_environment()`
+
+# `Build data/code paths`
+
+`sss_data_path("data", "2026", "raw") sss_code_path("config", "2026")`
+```
+
+For full SSS setup instructions (Google Drive, `.Renviron`, project structure), see the\
+**sss_production README** in the main `sss_production` repository.
