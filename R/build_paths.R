@@ -100,40 +100,6 @@ build_code_processing_path <- function(year = NULL,
   build_sss_path("src", year, "processing", module, state, filename, check_exists,where= "code")
 }
 
-#' NEW Path to a processing file/dir: src/<year>/processing/<module>/<file>
-#' Use this when there should be no state in the file path. I.e. childcare 
-#' processing code that is used on every state. 
-#' @export
-build_code_processing_path_no_state <- function(year = NULL,
-                                                module = NULL,
-                                                filename = NULL,
-                                                check_exists = FALSE) {
-  
-  # Resolve year
-  if (is.null(year)) {
-    year <- get0("SSS_year", envir = parent.frame(),
-                 ifnotfound = get0("sss_year", envir = parent.frame(),
-                                   ifnotfound = get0("year", envir = parent.frame(), ifnotfound = NULL)))
-  }
-  
-  # Resolve module
-  if (is.null(module)) {
-    module <- get0("module", envir = parent.frame(), ifnotfound = NULL)
-  }
-  
-  # Build a path WITHOUT STATE logic
-  build_sss_path(
-    top_level = "src",
-    year      = year,
-    subfolder = "processing",
-    module    = module,
-    state     = NULL,        # <<< KEY: no state folder ever
-    filename  = filename,
-    check_exists = check_exists,
-    where     = "code"
-  )
-}
-
 #' Path to analysis file/dir: src/<year>/analysis/<file>
 #' @export
 build_code_analysis_path <- function(year = NULL,
