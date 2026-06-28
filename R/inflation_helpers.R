@@ -69,12 +69,12 @@ get_inflation_factor <- function(data_point_name, inflation_df, meta_df,
     filter(series_id == series_id_val, year == base_year, period == base_period) %>%
     pull(value) %>%
     as.numeric()
-  
+
   if (is.na(base_cpi) || length(base_cpi) == 0) {
-    stop("Base CPI not found for dataset: ", data_point_name, 
+    stop("Base CPI not found for dataset: ", data_point_name,
          " (series_id: ", series_id_val, ", year: ", base_year, ", period: ", base_period, ")")
   }
-  
+
   # --- 5. Get Most Recent CPI ---
   month_order <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
                    "Aug", "Sep", "Oct", "Nov", "Dec")
@@ -88,14 +88,14 @@ get_inflation_factor <- function(data_point_name, inflation_df, meta_df,
     ) %>%
     arrange(desc(year_period)) %>%
     slice(1)
-  
+
   if (nrow(most_recent_row) == 0) {
-    stop("No valid CPI data found for dataset: ", data_point_name, 
+    stop("No valid CPI data found for dataset: ", data_point_name,
          " (series_id: ", series_id_val, ")")
   }
-  
+
   most_recent_cpi <- as.numeric(most_recent_row$value)
-  
+
   # --- 6. Return Inflation Factor ---
   return(most_recent_cpi / base_cpi)
   }
