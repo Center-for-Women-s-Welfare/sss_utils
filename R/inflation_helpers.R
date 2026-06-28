@@ -76,9 +76,9 @@ get_inflation_factor <- function(data_point_name, inflation_df, meta_df,
   }
   
   # --- 5. Get Most Recent CPI ---
-  month_order <- c("January", "February", "March", "April", "May", "June", "July",
-                   "August", "September", "October", "November", "December")
-browser()  
+  month_order <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                   "Aug", "Sep", "Oct", "Nov", "Dec")
+
   most_recent_row <- inflation_long %>%
     filter(series_id == series_id_val, period %in% c(month_order, "Annual")) %>%
     filter(!is.na(value)) %>%  # Exclude missing values

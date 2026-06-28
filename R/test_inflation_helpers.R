@@ -1,6 +1,10 @@
 # tests/testthat/test_inflation_helpers.R
 
+library(sssUtils)
 library(testthat)
+
+code_path <- sss_code_path(repo = "sss_utils")
+data_path <- sss_data_path("data","2026","processed")
 
 test_that("get_inflation_factor handles missing data correctly", {
   inflation_df <- data.frame(
@@ -65,3 +69,24 @@ test_that("get_inflation_factor skips missing months and finds most recent", {
   expect_true(is.numeric(result))
   expect_equal(result, 322.5 / 320.0, tolerance = 0.0001)
 })
+
+# Hypothetical tests passed. Try using our data, check against calculations
+# in Excel.
+# Load the function
+source(file.path(code_path,"R","inflation_helpers.R"))
+
+# Create test data matching your real structure
+test_inflation_df <- read_csv(file.path(data_path,"state_data","inflation.csv"))
+test_inflation_df_clean <- clean_inflation_month_columns(test_inflation_df) 
+test_meta_df <- read_csv(file.path(data_path,"state_data",
+                                   "meta_state_data.csv"))
+
+meta_row <- test_meta_df %>%
+  filter(dataset_name == "health_premium" & sss_year == 2026)  # adjust if you have a different column name for the identifier
+
+# Run the function
+result <- get_inflation_factor("health_premium", test_inflation_df_clean, meta_row)
+print(result)
+
+# All series checked out.
+
