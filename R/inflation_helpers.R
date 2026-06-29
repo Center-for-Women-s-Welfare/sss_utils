@@ -35,7 +35,7 @@ get_inflation_factor <- function(data_point_name, inflation_df, meta_df,
   if (nrow(meta_row) != 1) {
     stop("Expected exactly one metadata row for dataset_name = ", data_point_name,
          ", got: ", nrow(meta_row))
-  }
+    }
 
   series_id_val <- meta_row$series_id[1]
 
@@ -43,10 +43,10 @@ get_inflation_factor <- function(data_point_name, inflation_df, meta_df,
   if (data_point_name != "child care") {
     base_year <- meta_row$effective_date[1]
     base_period <- "Annual"
-  } else {
+    } else {
     if (is.null(child_care_inflation_df) || is.null(state_name)) {
       stop("Child care inflation requires state and child_care_inflation_df.")
-    }
+      }
 
     state_name_lower <- tolower(state_name)
     child_care_row <- child_care_inflation_df %>%
@@ -55,14 +55,14 @@ get_inflation_factor <- function(data_point_name, inflation_df, meta_df,
 
     if (nrow(child_care_row) != 1) {
       stop("Expected exactly one row for state in child_care_inflation_df, got: ", nrow(child_care_row))
-    }
+      }
 
     base_year <- child_care_row$base_cpi_year[1]
     base_period <- child_care_row$base_cpi_month[1]
     if (!is.null(base_period) && !is.na(base_period)) {
       base_period <- format(as.Date(paste("1", base_period, "2000"), format = "%d %B %Y"), "%b")
+      }
     }
-  }
 
   # --- 4. Get Base CPI ---
   base_cpi <- inflation_long %>%
@@ -73,7 +73,7 @@ get_inflation_factor <- function(data_point_name, inflation_df, meta_df,
   if (is.na(base_cpi) || length(base_cpi) == 0) {
     stop("Base CPI not found for dataset: ", data_point_name,
          " (series_id: ", series_id_val, ", year: ", base_year, ", period: ", base_period, ")")
-  }
+    }
 
   # --- 5. Get Most Recent CPI ---
   month_order <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
@@ -92,12 +92,21 @@ get_inflation_factor <- function(data_point_name, inflation_df, meta_df,
   if (nrow(most_recent_row) == 0) {
     stop("No valid CPI data found for dataset: ", data_point_name,
          " (series_id: ", series_id_val, ")")
-  }
+    }
 
   most_recent_cpi <- as.numeric(most_recent_row$value)
 
-  # --- 6. Return Inflation Factor ---
-  return(most_recent_cpi / base_cpi)
+  # --- 6. Calculate and Return Inflation Factor ---
+  inflation_factor <- most_recent_cpi / base_cpi
+  
+  # --- 7. Warn if inflation factor is 1 or less ---
+  if (inflation_factor <= 1) {
+    warning("Inflation factor for '", data_point_name, "' is ", inflation_factor,
+            ", which indicates deflation or no change. This may indicate data quality issues.")
+    }
+  
+  return(inflation_factor)
+  
   }
 
 
