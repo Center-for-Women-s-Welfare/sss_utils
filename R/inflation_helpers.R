@@ -98,15 +98,15 @@ get_inflation_factor <- function(data_point_name, inflation_df, meta_df,
 
   # --- 6. Calculate and Return Inflation Factor ---
   inflation_factor <- most_recent_cpi / base_cpi
-  
+
   # --- 7. Warn if inflation factor is 1 or less ---
   if (inflation_factor <= 1) {
     warning("Inflation factor for '", data_point_name, "' is ", inflation_factor,
             ", which indicates deflation or no change. This may indicate data quality issues.")
     }
-  
+
   return(inflation_factor)
-  
+
   }
 
 
