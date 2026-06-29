@@ -1,6 +1,6 @@
 #' Clean Inflation Month Columns
 #'
-#' Converts month-year formatted columns (e.g., "Jan 2024") by replacing "-(X)" 
+#' Converts month-year formatted columns (e.g., "Jan 2024") by replacing "-(X)"
 #' suppression markers with NA and coercing to numeric.
 #'
 #' @param df Data frame with month-year columns matching pattern "^[A-Z][a-z]{2} [0-9]{4}$"
@@ -60,7 +60,7 @@ save_sheets_to_csv <- function(sheet_url,
     }
     df %>% dplyr::mutate(dplyr::across(dplyr::all_of(numeric_cols), parse_special))
   }
-  
+
   if (tab %in% names(inflation_columns)) {
     sheet_data <- clean_inflation_month_columns(sheet_data, inflation_columns[[tab]])
   }
