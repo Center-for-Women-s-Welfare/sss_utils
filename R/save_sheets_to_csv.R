@@ -1,3 +1,27 @@
+#' Clean Inflation Month Columns
+#'
+#' Converts month-year formatted columns (e.g., "Jan 2024") by replacing "-(X)" 
+#' suppression markers with NA and coercing to numeric.
+#'
+#' @param df Data frame with month-year columns matching pattern "^[A-Z][a-z]{2} [0-9]{4}$"
+#'
+#' @return Data frame with cleaned inflation columns
+#'
+#' @keywords internal
+clean_inflation_month_columns <- function(df) {
+  df %>%
+    dplyr::mutate(
+      dplyr::across(
+        tidyselect::matches("^[A-Z][a-z]{2} [0-9]{4}$"),
+        ~ dplyr::na_if(as.character(.x), "-(X)")
+      ),
+      dplyr::across(
+        tidyselect::matches("^[A-Z][a-z]{2} [0-9]{4}$"),
+        as.numeric
+      )
+    )
+}
+
 #' Save Google Sheets Tabs as Clean CSV Files
 #'
 #' Downloads tabs from a Google Sheet and saves them as cleaned CSV files,
@@ -6,6 +30,7 @@
 #' @param sheet_url URL to the Google Sheet
 #' @param tab_map Named list. Keys are sheet tab names, values are CSV file names
 #' @param numeric_columns Named list. Keys are tab names, values are vectors of numeric column names
+#' @param inflation_columns Named list. Keys are tab names, values are logical or character vectors specifying columns with month-year format (e.g., "Jan 2024") that contain "-(X)" sentinel values to be converted to NA
 #' @param output_paths Either a named list (per tab) or a single string for all tabs
 #' @param base_path Character. Optional base path to prepend to each output path (default = get_base_path())
 #' @param dry_run Logical. If TRUE, prints what would happen without saving any files
@@ -16,6 +41,7 @@
 save_sheets_to_csv <- function(sheet_url,
                                tab_map,
                                numeric_columns = list(),
+                               inflation_columns = list(),
                                output_paths,
                            #    base_path = get_base_path(),
                                dry_run = FALSE) {
@@ -33,6 +59,10 @@ save_sheets_to_csv <- function(sheet_url,
       )
     }
     df %>% dplyr::mutate(dplyr::across(dplyr::all_of(numeric_cols), parse_special))
+  }
+  
+  if (tab %in% names(inflation_columns)) {
+    sheet_data <- clean_inflation_month_columns(sheet_data, inflation_columns[[tab]])
   }
 
   for (tab in names(tab_map)) {
