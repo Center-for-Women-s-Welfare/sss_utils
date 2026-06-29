@@ -16,13 +16,13 @@ test_that("get_inflation_factor handles missing data correctly", {
     `Nov 2025` = 323.1,
     check.names = FALSE
   )
-  
+
   meta_df <- data.frame(
     dataset_name = "transportation_fixed",
     series_id = "CUUR0000SA0",
     effective_date = 2024
   )
-  
+
   result <- get_inflation_factor("transportation_fixed", inflation_df, meta_df)
   expect_true(is.numeric(result))
   expect_true(result > 0)
@@ -36,13 +36,13 @@ test_that("month_order includes Sep (abbreviated)", {
     `Sep 2025` = 322.5,
     check.names = FALSE
   )
-  
+
   meta_df <- data.frame(
     dataset_name = "transportation_fixed",
     series_id = "CUUR0000SA0",
     effective_date = 2024
   )
-  
+
   result <- get_inflation_factor("transportation_fixed", inflation_df, meta_df)
   expect_true(is.numeric(result))
   expect_gt(result, 1)
@@ -58,13 +58,13 @@ test_that("get_inflation_factor skips missing months and finds most recent", {
     `Nov 2025` = NA,
     check.names = FALSE
   )
-  
+
   meta_df <- data.frame(
     dataset_name = "transportation_fixed",
     series_id = "CUUR0000SA0",
     effective_date = 2024
   )
-  
+
   result <- get_inflation_factor("transportation_fixed", inflation_df, meta_df)
   expect_true(is.numeric(result))
   expect_equal(result, 322.5 / 320.0, tolerance = 0.0001)
@@ -77,7 +77,7 @@ source(file.path(code_path,"R","inflation_helpers.R"))
 
 # Create test data matching your real structure
 test_inflation_df <- read_csv(file.path(data_path,"state_data","inflation.csv"))
-test_inflation_df_clean <- clean_inflation_month_columns(test_inflation_df) 
+test_inflation_df_clean <- clean_inflation_month_columns(test_inflation_df)
 test_meta_df <- read_csv(file.path(data_path,"state_data",
                                    "meta_state_data.csv"))
 
@@ -89,4 +89,3 @@ result <- get_inflation_factor("health_premium", test_inflation_df_clean, meta_r
 print(result)
 
 # All series checked out.
-
