@@ -2,31 +2,62 @@
 % Please edit documentation in R/inflation_helpers.R
 \name{get_inflation_factor}
 \alias{get_inflation_factor}
-\title{Get Inflation Factor}
+\title{Get Inflation Factor for a Specific Cost Category}
 \usage{
 get_inflation_factor(
   data_point_name,
   inflation_df,
   meta_df,
   child_care_inflation_df = NULL,
-  state_name = NULL
+  state_name = NULL,
+  target,
+  on_missing_target = c("ask", "latest", "error"),
+  prompt_fn = readline
 )
 }
 \arguments{
-\item{data_point_name}{The dataset name as listed in the metadata file (e.g., "transportation_fixed")}
+\item{data_point_name}{Name of the dataset in metadata (e.g. "transportation_fixed", "child care")}
 
-\item{inflation_df}{A wide-format CPI data frame with Series ID columns}
+\item{inflation_df}{BLS CPI values in wide format with a \verb{Series ID} column}
 
-\item{meta_df}{A metadata table with dataset_name, series_id, effective_date}
+\item{meta_df}{Metadata with \code{dataset_name}, \code{series_id}, and \code{effective_date}}
 
-\item{child_care_inflation_df}{Optional. Data frame with child care CPI base months by state}
+\item{child_care_inflation_df}{Optional data frame with child care base CPI month/year per state}
 
-\item{state_name}{Optional. State name (required for "child care")}
+\item{state_name}{Required when \code{data_point_name == "child care"}}
+
+\item{target}{Parsed target list from \code{parse_inflation_target()}}
+
+\item{on_missing_target}{What to do when CPI for the requested target month
+is unavailable for a series. One of:
+\itemize{
+\item \code{"ask"} (default): interactively propose the nearest earlier
+available month and let the user accept it or enter another month.
+Errors if the session is not interactive.
+\item \code{"latest"}: warn and use the nearest earlier available month.
+\item \code{"error"}: stop.
+}}
+
+\item{prompt_fn}{Function used to read user input (default \code{\link[=readline]{readline()}});
+mainly useful for testing.}
+
+\item{fallback_to_latest_if_missing_target}{Logical; if TRUE (default), use latest available month
+when requested target is unavailable; if FALSE, stop with error.}
 }
 \value{
-A numeric inflation factor (e.g., 1.1045)
+A numeric inflation factor with attributes:
+\describe{
+\item{requested_target}{e.g., "Apr 2026"}
+\item{used_target}{e.g., "Jan 2026" (if fallback occurred)}
+\item{used_target_key}{integer key YYYYMM}
+\item{latest_available_target}{latest available month label for the series}
+\item{fell_back}{TRUE/FALSE}
+\item{series_id}{CPI series used}
+\item{base_period}{base period ("Annual" or month abbreviation)}
+\item{base_year}{base year}
+}
 }
 \description{
-Calculates the inflation factor between a dataset's base CPI value and the most recent available CPI,
-using metadata and BLS CPI series data.
+Calculates the inflation factor from a base CPI (category-specific) to a
+target CPI month/year defined in config.
 }

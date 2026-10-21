@@ -8,22 +8,81 @@ get_all_inflation_factors(
   state_name,
   inflation_df,
   meta_df,
-  child_care_inflation_df
+  child_care_inflation_df,
+  target,
+  on_missing_target = c("ask", "latest", "error"),
+  prompt_fn = readline
 )
 }
 \arguments{
-\item{state_name}{Full state name (e.g., "Alabama")}
+\item{state_name}{Full state name (e.g., \code{"Alabama"}).}
 
-\item{inflation_df}{BLS CPI values, in wide format with \verb{Series ID} column}
+\item{inflation_df}{BLS CPI values in wide format with a \verb{Series ID} column
+and one column per \code{"Mon YYYY"} / \code{"Annual YYYY"} period.}
 
-\item{meta_df}{Metadata with dataset_name, series_id, effective_date}
+\item{meta_df}{Metadata with \code{dataset_name}, \code{series_id} and \code{effective_date}.}
 
-\item{child_care_inflation_df}{Data frame containing child care base month/year per state}
+\item{child_care_inflation_df}{Data frame with \code{state_name}, \code{base_cpi_year}
+and \code{base_cpi_month} for child care.}
+
+\item{target}{Parsed target list from \code{\link[=parse_inflation_target]{parse_inflation_target()}}.}
+
+\item{on_missing_target}{One of \code{"ask"} (default), \code{"latest"} or \code{"error"}.
+See \code{\link[=get_inflation_factor]{get_inflation_factor()}}.}
+
+\item{prompt_fn}{Function used to read user input (default \code{\link[=readline]{readline()}}).}
 }
 \value{
-A named list of numeric inflation factors
+A named list of numeric inflation factors with names
+\code{transportation_fixed}, \code{transportation_insurance}, \code{health_oop},
+\code{health_premium} and \verb{child care}. Each element carries attributes for
+logging: \code{requested_target}, \code{used_target}, \code{used_target_key},
+\code{latest_available_target}, \code{fell_back}, \code{series_id}, \code{base_period} and
+\code{base_year}. A defaulted child care factor instead carries
+\code{defaulted = TRUE} and \code{requested_target}.
+Note that \code{c()} and \code{unlist()} drop attributes, so read them from each
+list element.
 }
 \description{
-Returns a named list of inflation factors for all key cost categories used
-in Self-Sufficiency Standard calculations.
+Computes inflation factors for every cost category used in Self-Sufficiency
+Standard (SSS) calculations, inflating from each category's base CPI to the
+target month/year set in the config (see \code{\link[=parse_inflation_target]{parse_inflation_target()}}).
+}
+\details{
+Factors are computed for \code{transportation_fixed}, \code{transportation_insurance},
+\code{health_oop}, \code{health_premium} and \verb{child care}. Each category is evaluated
+against its own CPI series, so availability of the target month can differ
+by category.
+
+\strong{Missing target month.} If CPI is unavailable for the target month in a
+category's series, behavior is controlled by \code{on_missing_target}. In the
+default \code{"ask"} mode the user is prompted per category to accept the
+proposed fallback month (the nearest earlier month with data) or enter a
+different \code{YYYY-MM}. See \code{\link[=get_inflation_factor]{get_inflation_factor()}}.
+
+\strong{Child care defaults.} The child care factor is set to \code{1.0} (with a
+warning and a \code{defaulted} attribute) only when the state's child care base
+inputs are missing from \code{child_care_inflation_df} (no row for the state, or
+no base year/month). All other problems, such as missing base CPI,
+duplicate rows, unavailable target month or an aborted prompt, are raised as
+errors.
+}
+\examples{
+\dontrun{
+target <- parse_inflation_target("2026-04")
+factors <- get_all_inflation_factors(
+  state_name = "Alabama",
+  inflation_df = inflation_df,
+  meta_df = meta_state_data_df,
+  child_care_inflation_df = child_care_inflation_df,
+  target = target,
+  on_missing_target = "ask"
+)
+factors$transportation_fixed
+attr(factors$health_oop, "used_target")
+}
+
+}
+\seealso{
+\code{\link[=get_inflation_factor]{get_inflation_factor()}}, \code{\link[=parse_inflation_target]{parse_inflation_target()}}
 }

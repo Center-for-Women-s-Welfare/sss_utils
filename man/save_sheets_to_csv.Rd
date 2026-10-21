@@ -8,6 +8,7 @@ save_sheets_to_csv(
   sheet_url,
   tab_map,
   numeric_columns = list(),
+  inflation_columns = list(),
   output_paths,
   dry_run = FALSE
 )
@@ -18,6 +19,8 @@ save_sheets_to_csv(
 \item{tab_map}{Named list. Keys are sheet tab names, values are CSV file names}
 
 \item{numeric_columns}{Named list. Keys are tab names, values are vectors of numeric column names}
+
+\item{inflation_columns}{Named list. Keys are tab names, values are logical or character vectors specifying columns with month-year format (e.g., "Jan 2024") that contain "-(X)" sentinel values to be converted to NA}
 
 \item{output_paths}{Either a named list (per tab) or a single string for all tabs}
 
