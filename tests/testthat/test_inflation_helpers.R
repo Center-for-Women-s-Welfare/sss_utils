@@ -8,30 +8,30 @@ data_path <- sss_data_path("data","2026","processed")
 
 test_that("get_inflation_factor skips NA months when choosing fallback", {
   inflation_df <- data.frame(
-    `Series ID` = "CUUR0000SA0",
-    `Annual 2024` = 320.0,
-    `Aug 2025` = 322.1,
-    `Sep 2025` = 322.5,
-    `Oct 2025` = NA,
-    `Nov 2025` = 323.1,
+    `Series ID` = "CUUS0000SETD",
+    `Annual 2024` = 407.275,
+    `Jan 2026` = 440.180,
+    `Feb 2026` = 444.110,
+    `Mar 2026` = 449.675,
+    `Apr 2026` = NA,
     check.names = FALSE
   )
   meta_df <- data.frame(
     dataset_name = "transportation_fixed",
-    series_id = "CUUR0000SA0",
+    series_id = "CUUS0000SETD",
     effective_date = 2024
   )
   
   expect_warning(
     result <- get_inflation_factor(
       "transportation_fixed", inflation_df, meta_df,
-      target = parse_inflation_target("2026-01"),
+      target = parse_inflation_target("2026-04"),
       on_missing_target = "latest"
     ),
     "Falling back"
   )
-  expect_equal(unname(result), 322.5 / 320.0, tolerance = 0.0001)
-  expect_identical(attr(result, "used_target"), "Sep 2025")
+  expect_equal(as.numeric(result), 449.675 / 407.275, tolerance = 0.0001)
+  expect_identical(attr(result, "used_target"), "Mar 2026")
   expect_true(attr(result, "fell_back"))
 })
 
@@ -101,7 +101,7 @@ test_that("get_inflation_factor uses exact target when available", {
     on_missing_target = "error"
   )
   
-  expect_equal(unname(f), 120 / 100)
+  expect_equal(as.numeric(f), 120 / 100)
   expect_identical(attr(f, "requested_target"), "Apr 2026")
   expect_identical(attr(f, "used_target"), "Apr 2026")
   expect_false(isTRUE(attr(f, "fell_back")))
@@ -134,7 +134,7 @@ test_that("get_inflation_factor falls back to nearest prior when target missing 
     "Falling back"
   )
   
-  expect_equal(unname(f), 118 / 100)
+  expect_equal(as.numeric(f), 118 / 100)
   expect_true(isTRUE(attr(f, "fell_back")))
   expect_identical(attr(f, "used_target"), "Jan 2026")
 })
@@ -197,7 +197,7 @@ test_that("ask mode accepts proposed fallback with prompt_fn", {
     prompt_fn = fake_prompt
   )
   
-  expect_equal(unname(f), 110 / 100)
+  expect_equal(as.numeric(f), 110 / 100)
   expect_true(isTRUE(attr(f, "fell_back")))
   expect_identical(attr(f, "used_target"), "Jan 2026")
 })
@@ -233,7 +233,7 @@ test_that("ask mode decline then enter explicit fallback month", {
     prompt_fn = fake_prompt
   )
   
-  expect_equal(unname(f), 110 / 100)
+  expect_equal(as.numeric(f), 110 / 100)
   expect_identical(attr(f, "used_target"), "Jan 2026")
 })
 
@@ -311,12 +311,12 @@ test_that("get_all_inflation_factors: child care base missing defaults to 1.0 on
     "Using 1.0"
   )
   
-  expect_equal(out$transportation_fixed, 121 / 100)
-  expect_equal(out$transportation_insurance, 111 / 100)
-  expect_equal(out$health_oop, 131 / 100)
-  expect_equal(out$health_premium, 141 / 100)
+  expect_equal(as.numeric(out$transportation_fixed), 121 / 100)
+  expect_equal(as.numeric(out$transportation_insurance), 111 / 100)
+  expect_equal(as.numeric(out$health_oop), 131 / 100)
+  expect_equal(as.numeric(out$health_premium), 141 / 100)
   
-  expect_equal(out[["child care"]], 1.0)
+  expect_equal(as.numeric(out[["child care"]]), 1.0)
   expect_true(isTRUE(attr(out[["child care"]], "defaulted")))
   expect_identical(attr(out[["child care"]], "requested_target"), "Apr 2026")
 })
@@ -360,22 +360,3 @@ test_that("get_all_inflation_factors propagates non-child-care errors (e.g., mis
   )
 })
 
-# Hypothetical tests passed. Try using our data, check against calculations
-# in Excel.
-# Load the function
-source(file.path(code_path,"R","inflation_helpers.R"))
-
-# Create test data matching your real structure
-test_inflation_df <- read_csv(file.path(data_path,"state_data","inflation.csv"))
-test_inflation_df_clean <- clean_inflation_month_columns(test_inflation_df)
-test_meta_df <- read_csv(file.path(data_path,"state_data",
-                                   "meta_state_data.csv"))
-
-meta_row <- test_meta_df %>%
-  filter(dataset_name == "health_premium" & sss_year == 2026)  # adjust if you have a different column name for the identifier
-
-# Run the function
-result <- get_inflation_factor("health_premium", test_inflation_df_clean, meta_row)
-print(result)
-
-# All series checked out.

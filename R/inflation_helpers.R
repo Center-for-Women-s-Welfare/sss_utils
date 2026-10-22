@@ -420,6 +420,8 @@ get_inflation_factor <- function(data_point_name,
   attr(inflation_factor, "series_id") <- series_id_val
   attr(inflation_factor, "base_period") <- base_period
   attr(inflation_factor, "base_year") <- base_year
+  attr(inflation_factor, "base_cpi") <- base_cpi
+  attr(inflation_factor, "target_cpi") <- target_cpi
   
   inflation_factor
 }

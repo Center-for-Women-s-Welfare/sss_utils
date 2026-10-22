@@ -2,3 +2,5 @@
 ^\.Rproj\.user$
 
 ^\.pre-commit-config\.yaml$
+
+^dev$
