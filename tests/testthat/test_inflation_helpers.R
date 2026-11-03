@@ -21,7 +21,7 @@ test_that("get_inflation_factor skips NA months when choosing fallback", {
     series_id = "CUUS0000SETD",
     effective_date = 2024
   )
-  
+
   expect_warning(
     result <- get_inflation_factor(
       "transportation_fixed", inflation_df, meta_df,
@@ -47,7 +47,7 @@ test_that("Sept column spelling is normalized to Sep", {
     series_id = "CUUR0000SA0",
     effective_date = 2024
   )
-  
+
   suppressWarnings(
     result <- get_inflation_factor(
       "transportation_fixed", inflation_df, meta_df,
@@ -66,12 +66,12 @@ test_that("parse_inflation_target accepts valid January/April and rejects others
   expect_equal(t1$month_abb, "Jan")
   expect_equal(t1$iso, "2026-01")
   expect_equal(t1$key, 202601L)
-  
+
   t2 <- parse_inflation_target("2026-04")
   expect_equal(t2$month, 4L)
   expect_equal(t2$month_abb, "Apr")
   expect_equal(t2$label, "Apr 2026")
-  
+
   expect_error(parse_inflation_target("2026-03"), "not allowed")
   expect_error(parse_inflation_target("April 2026"), "Expected 'YYYY-MM'")
   expect_error(parse_inflation_target(202604), "must be a single non-missing character")
@@ -91,7 +91,7 @@ test_that("get_inflation_factor uses exact target when available", {
     series_id = "S1",
     effective_date = 2023
   )
-  
+
   target <- parse_inflation_target("2026-04")
   f <- get_inflation_factor(
     data_point_name = "transportation_fixed",
@@ -100,7 +100,7 @@ test_that("get_inflation_factor uses exact target when available", {
     target = target,
     on_missing_target = "error"
   )
-  
+
   expect_equal(as.numeric(f), 120 / 100)
   expect_identical(attr(f, "requested_target"), "Apr 2026")
   expect_identical(attr(f, "used_target"), "Apr 2026")
@@ -121,7 +121,7 @@ test_that("get_inflation_factor falls back to nearest prior when target missing 
     series_id = "S1",
     effective_date = 2023
   )
-  
+
   target <- parse_inflation_target("2026-04")
   expect_warning(
     f <- get_inflation_factor(
@@ -133,7 +133,7 @@ test_that("get_inflation_factor falls back to nearest prior when target missing 
     ),
     "Falling back"
   )
-  
+
   expect_equal(as.numeric(f), 118 / 100)
   expect_true(isTRUE(attr(f, "fell_back")))
   expect_identical(attr(f, "used_target"), "Jan 2026")
@@ -153,7 +153,7 @@ test_that("get_inflation_factor errors when target missing and mode=error", {
     effective_date = 2023
   )
   target <- parse_inflation_target("2026-04")
-  
+
   expect_error(
     get_inflation_factor(
       data_point_name = "health_premium",
@@ -180,14 +180,14 @@ test_that("ask mode accepts proposed fallback with prompt_fn", {
     effective_date = 2023
   )
   target <- parse_inflation_target("2026-04")
-  
+
   answers <- c("Y")
   i <- 0L
   fake_prompt <- function(...) {
     i <<- i + 1L
     answers[[i]]
   }
-  
+
   f <- get_inflation_factor(
     data_point_name = "transportation_insurance",
     inflation_df = inflation_df,
@@ -196,7 +196,7 @@ test_that("ask mode accepts proposed fallback with prompt_fn", {
     on_missing_target = "ask",
     prompt_fn = fake_prompt
   )
-  
+
   expect_equal(as.numeric(f), 110 / 100)
   expect_true(isTRUE(attr(f, "fell_back")))
   expect_identical(attr(f, "used_target"), "Jan 2026")
@@ -216,14 +216,14 @@ test_that("ask mode decline then enter explicit fallback month", {
     effective_date = 2023
   )
   target <- parse_inflation_target("2026-04")
-  
+
   answers <- c("N", "2026-01")
   i <- 0L
   fake_prompt <- function(...) {
     i <<- i + 1L
     answers[[i]]
   }
-  
+
   f <- get_inflation_factor(
     data_point_name = "transportation_fixed",
     inflation_df = inflation_df,
@@ -232,7 +232,7 @@ test_that("ask mode decline then enter explicit fallback month", {
     on_missing_target = "ask",
     prompt_fn = fake_prompt
   )
-  
+
   expect_equal(as.numeric(f), 110 / 100)
   expect_identical(attr(f, "used_target"), "Jan 2026")
 })
@@ -251,14 +251,14 @@ test_that("ask mode can abort via q", {
     effective_date = 2023
   )
   target <- parse_inflation_target("2026-04")
-  
+
   answers <- c("N", "q")
   i <- 0L
   fake_prompt <- function(...) {
     i <<- i + 1L
     answers[[i]]
   }
-  
+
   expect_error(
     get_inflation_factor(
       data_point_name = "transportation_fixed",
@@ -281,14 +281,14 @@ test_that("get_all_inflation_factors: child care base missing defaults to 1.0 on
     `Jan 2026` = c(120, 110, 130, 140, 150),
     `Apr 2026` = c(121, 111, 131, 141, 151)
   )
-  
+
   meta_df <- data.frame(
     dataset_name = c("transportation_fixed", "transportation_insurance", "health_oop", "health_premium", "child care"),
     series_id = c("S_TF", "S_TI", "S_HO", "S_HP", "S_CC"),
     effective_date = c(2023, 2023, 2023, 2023, 2023),
     stringsAsFactors = FALSE
   )
-  
+
   # Missing Alabama row should trigger only child-care default
   child_care_inflation_df <- data.frame(
     state_name = "Washington",
@@ -296,9 +296,9 @@ test_that("get_all_inflation_factors: child care base missing defaults to 1.0 on
     base_cpi_month = "January",
     stringsAsFactors = FALSE
   )
-  
+
   target <- parse_inflation_target("2026-04")
-  
+
   expect_warning(
     out <- get_all_inflation_factors(
       state_name = "Alabama",
@@ -310,12 +310,12 @@ test_that("get_all_inflation_factors: child care base missing defaults to 1.0 on
     ),
     "Using 1.0"
   )
-  
+
   expect_equal(as.numeric(out$transportation_fixed), 121 / 100)
   expect_equal(as.numeric(out$transportation_insurance), 111 / 100)
   expect_equal(as.numeric(out$health_oop), 131 / 100)
   expect_equal(as.numeric(out$health_premium), 141 / 100)
-  
+
   expect_equal(as.numeric(out[["child care"]]), 1.0)
   expect_true(isTRUE(attr(out[["child care"]], "defaulted")))
   expect_identical(attr(out[["child care"]], "requested_target"), "Apr 2026")
@@ -330,23 +330,23 @@ test_that("get_all_inflation_factors propagates non-child-care errors (e.g., mis
     `Jan 2026` = c(120, 110, 130, 140, 150)
     # Apr missing for all series
   )
-  
+
   meta_df <- data.frame(
     dataset_name = c("transportation_fixed", "transportation_insurance", "health_oop", "health_premium", "child care"),
     series_id = c("S_TF", "S_TI", "S_HO", "S_HP", "S_CC"),
     effective_date = c(2023, 2023, 2023, 2023, 2023),
     stringsAsFactors = FALSE
   )
-  
+
   child_care_inflation_df <- data.frame(
     state_name = "Alabama",
     base_cpi_year = 2023,
     base_cpi_month = "January",
     stringsAsFactors = FALSE
   )
-  
+
   target <- parse_inflation_target("2026-04")
-  
+
   expect_error(
     get_all_inflation_factors(
       state_name = "Alabama",
@@ -359,4 +359,3 @@ test_that("get_all_inflation_factors propagates non-child-care errors (e.g., mis
     class = "sss_inflation_target_unavailable"
   )
 })
-

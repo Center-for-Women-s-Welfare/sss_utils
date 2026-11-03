@@ -31,14 +31,14 @@ parse_inflation_target <- function(inflation_target, allowed_months = c(1L, 4L))
       call. = FALSE
     )
   }
-  
+
   inflation_target <- trimws(inflation_target)
-  
+
   # ---- strict format check ----
   # Accept only exactly YYYY-MM where MM is 01..12.
   m <- regexec("^([0-9]{4})-(0[1-9]|1[0-2])$", inflation_target)
   parts <- regmatches(inflation_target, m)[[1]]
-  
+
   if (length(parts) == 0L) {
     stop(
       "Invalid `inflation_target` format: '", inflation_target,
@@ -46,10 +46,10 @@ parse_inflation_target <- function(inflation_target, allowed_months = c(1L, 4L))
       call. = FALSE
     )
   }
-  
+
   year  <- as.integer(parts[2])
   month <- as.integer(parts[3])
-  
+
   # ---- allowed month check (policy) ----
   allowed_months <- as.integer(allowed_months)
   if (length(allowed_months) == 0L || any(is.na(allowed_months))) {
@@ -58,7 +58,7 @@ parse_inflation_target <- function(inflation_target, allowed_months = c(1L, 4L))
   if (any(allowed_months < 1L | allowed_months > 12L)) {
     stop("`allowed_months` values must be between 1 and 12.", call. = FALSE)
   }
-  
+
   if (!month %in% allowed_months) {
     allowed_fmt <- sprintf("%02d", sort(unique(allowed_months)))
     stop(
@@ -68,14 +68,14 @@ parse_inflation_target <- function(inflation_target, allowed_months = c(1L, 4L))
       call. = FALSE
     )
   }
-  
+
   # ---- labels used elsewhere in inflation logic/logging ----
   month_abb  <- month.abb[month]   # Jan, Feb, ... (matches inflation columns)
   month_full <- month.name[month]  # January, February, ...
   iso        <- sprintf("%04d-%02d", year, month)
   label      <- sprintf("%s %d", month_abb, year)
   key        <- as.integer(year * 100L + month)
-  
+
   list(
     year = year,
     month = month,
@@ -105,7 +105,7 @@ prompt_inflation_fallback <- function(data_point_name,
                                       prompt_fn = readline) {
   fmt_ym <- function(y, m) sprintf("%04d-%02d", as.integer(y), as.integer(m))
   proposed_ym <- fmt_ym(proposed$year, proposed$period_num)
-  
+
   repeat {
     ans <- tolower(trimws(prompt_fn(sprintf(
       "No inflation data for %s (requested %s). Accept fallback to %s? [Y/n]: ",
@@ -115,13 +115,13 @@ prompt_inflation_fallback <- function(data_point_name,
     if (ans %in% c("n", "no")) break
     message("Please answer Y or N.")
   }
-  
+
   first <- available_months[1, ]
   last  <- available_months[nrow(available_months), ]
   range_txt <- sprintf("%s to %s",
                        fmt_ym(first$year, first$period_num),
                        fmt_ym(last$year, last$period_num))
-  
+
   repeat {
     ym <- trimws(prompt_fn(sprintf(
       "Enter fallback month for %s as YYYY-MM (available %s, 'q' to abort): ",
@@ -199,7 +199,7 @@ get_inflation_factor <- function(data_point_name,
       call. = FALSE
     )
   }
-  
+
   # --- 1. Reshape inflation data ---
   inflation_long <- inflation_df %>%
     dplyr::rename(series_id = `Series ID`) %>%
@@ -215,7 +215,7 @@ get_inflation_factor <- function(data_point_name,
       year = as.integer(year),
       value = suppressWarnings(as.numeric(value))
     )
-  
+
   # normalize month variants (defensive)
   inflation_long <- inflation_long %>%
     dplyr::mutate(
@@ -224,11 +224,11 @@ get_inflation_factor <- function(data_point_name,
         TRUE ~ period
       )
     )
-  
+
   # --- 2. Look up metadata ---
   meta_row <- meta_df %>%
     dplyr::filter(dataset_name == data_point_name)
-  
+
   if (nrow(meta_row) != 1) {
     stop(
       "Expected exactly one metadata row for dataset_name = '", data_point_name,
@@ -236,9 +236,9 @@ get_inflation_factor <- function(data_point_name,
       call. = FALSE
     )
   }
-  
+
   series_id_val <- meta_row$series_id[1]
-  
+
   # ---- 3. Determine base CPI period ----
   if (data_point_name != "child care") {
     base_year <- as.integer(meta_row$effective_date[1])
@@ -247,13 +247,13 @@ get_inflation_factor <- function(data_point_name,
     if (is.null(child_care_inflation_df) || is.null(state_name)) {
       stop("Child care inflation factor requires `child_care_inflation_df` and `state_name`.", call. = FALSE)
     }
-    
+
     state_name_lower <- tolower(state_name)
-    
+
     child_care_row <- child_care_inflation_df %>%
       dplyr::mutate(state_name_clean = tolower(.data$state_name)) %>%
       dplyr::filter(state_name_clean == state_name_lower)
-    
+
     if (nrow(child_care_row) == 0) {
       sss_abort(
         paste0("No row for state '", state_name, "' in child_care_inflation_df."),
@@ -264,10 +264,10 @@ get_inflation_factor <- function(data_point_name,
       stop("Expected exactly one row for state_name in child_care_inflation_df, got: ",
            nrow(child_care_row), call. = FALSE)   # duplicate data: do not swallow
     }
-    
+
     base_year <- suppressWarnings(as.integer(child_care_row$base_cpi_year[1]))
     base_period_raw <- child_care_row$base_cpi_month[1]
-    
+
     if (is.na(base_year) || is.null(base_period_raw) ||
         is.na(base_period_raw) || base_period_raw == "") {
       sss_abort(
@@ -275,7 +275,7 @@ get_inflation_factor <- function(data_point_name,
         "sss_child_care_base_missing"
       )
     }
-    
+
     # parse full month names robustly, return 3-letter abbreviation
     base_period <- format(
       as.Date(paste("1", base_period_raw, "2000"), format = "%d %B %Y"),
@@ -284,7 +284,7 @@ get_inflation_factor <- function(data_point_name,
     # normalize Sep spelling
     if (identical(base_period, "Sept")) base_period <- "Sep"
   }
-  
+
   # ---- 4. Get base CPI ----
   base_cpi <- inflation_long %>%
     dplyr::filter(
@@ -294,7 +294,7 @@ get_inflation_factor <- function(data_point_name,
     ) %>%
     dplyr::pull(value) %>%
     as.numeric()
-  
+
   base_cpi <- base_cpi[!is.na(base_cpi)]
   if (length(base_cpi) == 0) {
     stop(
@@ -306,11 +306,11 @@ get_inflation_factor <- function(data_point_name,
     )
   }
   base_cpi <- base_cpi[1]
-  
+
   # --- 5. Collect available monthly CPI for targeting ---
   month_order <- month.abb
   month_key <- stats::setNames(seq_along(month_order), month_order)
-  
+
   available_months <- inflation_long %>%
     dplyr::filter(
       series_id == series_id_val,
@@ -322,7 +322,7 @@ get_inflation_factor <- function(data_point_name,
       key = year * 100L + period_num
     ) %>%
     dplyr::arrange(key)
-  
+
   if (nrow(available_months) == 0) {
     stop(
       "No valid monthly CPI data found for dataset '", data_point_name,
@@ -330,21 +330,21 @@ get_inflation_factor <- function(data_point_name,
       call. = FALSE
     )
   }
-  
+
   latest_row <- available_months %>% dplyr::slice_tail(n = 1)
   latest_key <- latest_row$key[[1]]
   latest_label <- sprintf("%s %d", latest_row$period[[1]], latest_row$year[[1]])
-  
+
   # --- 6. Choose target row ---
   requested_target_label <- target$label
   fell_back <- FALSE
-  
+
   target_row <- available_months %>% dplyr::filter(key == target$key)
-  
+
   if (nrow(target_row) == 0) {
     # Nearest available month at or before the requested target
     prior <- available_months %>% dplyr::filter(key < target$key)
-    
+
     if (nrow(prior) == 0) {
       sss_abort(
         paste0("No CPI data at or before ", requested_target_label,
@@ -354,7 +354,7 @@ get_inflation_factor <- function(data_point_name,
     }
     proposed <- dplyr::slice_tail(prior, n = 1)
     proposed_label <- sprintf("%s %d", proposed$period[[1]], proposed$year[[1]])
-    
+
     if (on_missing_target == "error") {
       sss_abort(
         paste0("No CPI data for ", requested_target_label, " for '", data_point_name,
@@ -384,7 +384,7 @@ get_inflation_factor <- function(data_point_name,
     }
     fell_back <- TRUE
   }
-  
+
   target_cpi <- as.numeric(target_row$value[[1]])
   if (is.na(target_cpi)) {
     stop(
@@ -393,7 +393,7 @@ get_inflation_factor <- function(data_point_name,
       call. = FALSE
     )
   }
-  
+
   used_period <- target_row$period[[1]]
   used_year   <- target_row$year[[1]]
   used_label  <- sprintf("%s %d", used_period, used_year)
@@ -401,7 +401,7 @@ get_inflation_factor <- function(data_point_name,
 
   # --- 6. Calculate and return inflation factor ---
   inflation_factor <- target_cpi / base_cpi
-  
+
   # optional sanity warning retained
   if (!is.na(inflation_factor) && inflation_factor <= 1) {
     warning(
@@ -410,7 +410,7 @@ get_inflation_factor <- function(data_point_name,
       call. = FALSE
     )
   }
-  
+
   # attach metadata for logging/auditing
   attr(inflation_factor, "requested_target") <- requested_target_label
   attr(inflation_factor, "used_target") <- used_label
@@ -422,7 +422,7 @@ get_inflation_factor <- function(data_point_name,
   attr(inflation_factor, "base_year") <- base_year
   attr(inflation_factor, "base_cpi") <- base_cpi
   attr(inflation_factor, "target_cpi") <- target_cpi
-  
+
   inflation_factor
 }
 
@@ -500,7 +500,7 @@ get_all_inflation_factors <- function(state_name,
                                       prompt_fn = readline) {
   on_missing_target <- match.arg(on_missing_target)
   factors <- list()
-  
+
   categories <- c("transportation_fixed", "transportation_insurance",
                   "health_oop", "health_premium")
   for (cat in categories) {
@@ -513,7 +513,7 @@ get_all_inflation_factors <- function(state_name,
       prompt_fn = prompt_fn
     )
   }
-  
+
   factors[["child care"]] <- tryCatch(
     get_inflation_factor(
       data_point_name = "child care",
@@ -535,6 +535,6 @@ get_all_inflation_factors <- function(state_name,
       out
     }
   )
-  
+
   factors
 }
