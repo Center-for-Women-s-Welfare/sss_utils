@@ -26,15 +26,16 @@ Windows requires **Rtools** to build packages from source:\
 **Basic usage**
 
 ``` r
-`library(sssUtils)`
+library(sssUtils)
 
-# `Check environment variables`
+# Check environment variables
 
-`sss_check_environment()`
+sss_check_environment()
 
-# `Build data/code paths`
+# Build data/code paths
 
-`sss_data_path("data", "2026", "raw") sss_code_path("config", "2026")`
+sss_data_path("data", "2026", "raw")
+sss_code_path("config", "2026")
 ```
 
 For full SSS setup instructions (Google Drive, `.Renviron`, project structure), see the\
