@@ -40,9 +40,6 @@ Errors if the session is not interactive.
 
 \item{prompt_fn}{Function used to read user input (default \code{\link[=readline]{readline()}});
 mainly useful for testing.}
-
-\item{fallback_to_latest_if_missing_target}{Logical; if TRUE (default), use latest available month
-when requested target is unavailable; if FALSE, stop with error.}
 }
 \value{
 A numeric inflation factor with attributes:
