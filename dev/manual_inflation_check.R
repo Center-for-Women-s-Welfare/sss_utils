@@ -1,5 +1,10 @@
 # Manual check only (not CI)
+library(sssUtils)
+library(dplyr)
+code_path <- sss_code_path(repo = "sss_utils")
+data_path <- sss_data_path("data", "2026", "processed")
 source(file.path(code_path, "R", "inflation_helpers.R"))
+source(file.path(code_path, "R", "save_sheets_to_csv.R"))
 
 test_inflation_df <- readr::read_csv(file.path(data_path, "state_data", "inflation.csv"))
 test_inflation_df_clean <- clean_inflation_month_columns(test_inflation_df)

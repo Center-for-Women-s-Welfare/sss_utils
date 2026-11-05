@@ -153,8 +153,6 @@ prompt_inflation_fallback <- function(data_point_name,
 #' @param child_care_inflation_df Optional data frame with child care base CPI month/year per state
 #' @param state_name Required when `data_point_name == "child care"`
 #' @param target Parsed target list from `parse_inflation_target()`
-#' @param fallback_to_latest_if_missing_target Logical; if TRUE (default), use latest available month
-#'   when requested target is unavailable; if FALSE, stop with error.
 #' @param on_missing_target What to do when CPI for the requested target month
 #'   is unavailable for a series. One of:
 #'   \itemize{
@@ -265,7 +263,12 @@ get_inflation_factor <- function(data_point_name,
            nrow(child_care_row), call. = FALSE)   # duplicate data: do not swallow
     }
 
-    base_year <- suppressWarnings(as.integer(child_care_row$base_cpi_year[1]))
+    base_year_raw <- child_care_row$base_cpi_year[1]
+    base_year <- suppressWarnings(as.integer(base_year_raw))
+    if (length(base_year) == 1L && is.na(base_year) &&
+        !is.na(base_year_raw) && nzchar(trimws(as.character(base_year_raw)))) {
+      stop("Invalid child care base year for state: ", state_name, call. = FALSE)
+    }
     base_period_raw <- child_care_row$base_cpi_month[1]
 
     if (is.na(base_year) || is.null(base_period_raw) ||
