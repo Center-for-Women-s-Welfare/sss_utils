@@ -13,10 +13,10 @@ Utilities for the Self-Sufficiency Standard (SSS) workflow, including:
 
 `sssUtils` is **not** on CRAN. Install it from GitHub:
 
-``` r
+~~~r
 install.packages("remotes")   # if needed
 remotes::install_github("Center-for-Women-s-Welfare/sssUtils")
-```
+~~~
 
 ### Windows users
 
